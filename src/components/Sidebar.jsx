@@ -31,7 +31,7 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
             onClick={() => setActiveItem(label)}
             className={`menu-item ${activeItem === label ? "active" : ""}`}
           >
-            <Icon size={18} className="icon" />
+            <Icon size={30} className="icon" />
             {label}
           </Link>
         ))}
