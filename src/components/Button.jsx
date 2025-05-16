@@ -6,14 +6,18 @@ const DropdownButton = ({
   icon = '▼',
   path = '/',
   items = [],
+  svg,
+  onClick,
   customTrigger = null,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleDropdown = () => {
+ const toggleDropdown = () => {
     setIsOpen(!isOpen);
+    if (onClick && items.length === 0) {
+       onClick();
+    }
   };
-
   return (
     <div className="dropdown-container relative inline-block">
       {customTrigger ? (
