@@ -8,6 +8,36 @@ const ChatList = () => {
   const chats = state?.chats || [];
 
   const [selectedChat, setSelectedChat] = useState(null);
+  const [messages, setMessages] = useState([]); // Store messages for the selected chat
+  const [newMessage, setNewMessage] = useState(""); // Store new message input
+
+  // Mock messages for demonstration (replace with actual data)
+  const loadMessages = (chat) => {
+    // This is a placeholder; fetch real messages from an API or state
+    return [
+      { id: 1, sender: chat.name, text: chat.message, timestamp: chat.timestamp },
+      { id: 2, sender: "You", text: "Hey, how's it going?", timestamp: "10:05 AM" },
+    ];
+  };
+  const handleChatClick = (chat) => {
+    setSelectedChat(chat);
+    setMessages(loadMessages(chat)); // Load messages for the selected chat
+  };
+
+  // Handle sending a new message
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (newMessage.trim()) {
+      const newMsg = {
+        id: messages.length + 1,
+        sender: "You",
+        text: newMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      setMessages([...messages, newMsg]);
+      setNewMessage(""); // Clear input
+    }
+  };
 
   return (
     <div className="chat-list-container">
@@ -23,7 +53,7 @@ const ChatList = () => {
               className={`chat-item ${
                 selectedChat?.id === chat.id ? "active" : ""
               }`}
-              onClick={() => setSelectedChat(chat)}
+              onClick={() => handleChatClick(chat)}
             >
               <img
                 src={chat.avatar}
@@ -45,10 +75,45 @@ const ChatList = () => {
       {/* Right Message Viewer */}
       <div className="chat-viewer">
         {selectedChat ? (
-          <div className="chat-messages">
-            <h3>Chat with {selectedChat.name}</h3>
-            <p>{selectedChat.message}</p>
-            {/* You can replace with full conversation rendering */}
+          <div className="chat-interface">
+            {/* Chat Header */}
+            <div className="chat-interface-header">
+              <img
+                src={selectedChat.avatar}
+                alt={`${selectedChat.name}'s avatar`}
+                className="chat-interface-avatar"
+              />
+              <h3>{selectedChat.name}</h3>
+            </div>
+            {/* Message List */}
+            <div className="chat-messages">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`message ${
+                    msg.sender === "You" ? "message-sent" : "message-received"
+                  }`}
+                >
+                  <div className="message-content">
+                    <p>{msg.text}</p>
+                    <span className="message-timestamp">{msg.timestamp}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Message Input */}
+            <form className="chat-input-form" onSubmit={handleSendMessage}>
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message..."
+                className="chat-input"
+              />
+              <button type="submit" className="send-button">
+                Send
+              </button>
+            </form>
           </div>
         ) : (
           <div className="chat-placeholder">

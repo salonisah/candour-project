@@ -8,11 +8,11 @@ const ArticleTable = ({ articles }) => (
     <tbody>
       {articles.map((a, i) => (
         <tr key={i}>
-          <td>{a.title}</td>
-          <td>{a.category}</td>
-          <td>{a.author}</td>
-          <td>{a.date}</td>
-          <td>{a.views}</td>
+          <td className="t-header">{a.title}</td>
+          <td className="t-header">{a.category}</td>
+          <td className="t-header">{a.author}</td>
+          <td className="t-header">{a.date}</td>
+          <td className="t-header">{a.views}</td>
         </tr>
       ))}
     </tbody>
