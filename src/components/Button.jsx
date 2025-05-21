@@ -9,15 +9,17 @@ const DropdownButton = ({
   svg,
   onClick,
   customTrigger = null,
+  startIcon = null, // 👈 New prop
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
- const toggleDropdown = () => {
+  const toggleDropdown = () => {
     setIsOpen(!isOpen);
     if (onClick && items.length === 0) {
-       onClick();
+      onClick();
     }
   };
+
   return (
     <div className="dropdown-container relative inline-block">
       {customTrigger ? (
@@ -27,13 +29,16 @@ const DropdownButton = ({
       ) : (
         <button
           onClick={toggleDropdown}
-          className={`dropdown-button px-4 py-2 rounded ${newcl}`}
+          className={`dropdown-button px-4 py-2 rounded flex items-center gap-2 ${newcl}`}
         >
-          {text} <span className="dropdown-icon ml-1">{icon}</span>
+          {/* Start icon before text */}
+          {startIcon && <span className="start-icon">{startIcon}</span>}
+          {text}
+          {icon && <span className="dropdown-icon ml-1">{icon}</span>}
         </button>
       )}
 
-      {isOpen && (
+      {isOpen && items.length > 0 && (
         <div className="dropdown-menu absolute mt-2 w-48 bg-white border rounded shadow-lg z-10">
           {items.map((item, index) => (
             <button
@@ -41,7 +46,7 @@ const DropdownButton = ({
               className="dropdown-item w-full text-left px-4 py-2 hover:bg-gray-100"
               onClick={() => {
                 item.action();
-                setIsOpen(false); // auto-close on action
+                setIsOpen(false);
               }}
             >
               {item.label}

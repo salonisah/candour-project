@@ -1,10 +1,13 @@
-// src/ContentManagement.js
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Table from "../components/Table";
-import FilterPopup from "../layout/FilterPopup"; // Adjust the import path as needed
- 
+import FilterPopup from "../layout/FilterPopup";
+import { tableData as initialData } from "../components/mockData";
+import dayjs from "dayjs";
 
 const ContentManagement = () => {
+  const navigate = useNavigate();
+
   const tableHeaders = [
     "Title",
     "Type",
@@ -15,64 +18,8 @@ const ContentManagement = () => {
     "No. of Views",
   ];
 
-  const tableData = [
-    {
-      title: "5 ways to start crocheting",
-      type: "Information",
-      category: "Leisure & Lifestyle",
-      publishedBy: "Anusha Puri",
-      publishedDate: "15th Jan, 2025",
-      status: "Active",
-      views: "50",
-    },
-    {
-      title: "Foods that diabetic patient can eat",
-      type: "Information",
-      category: "Medical",
-      publishedBy: "Sambrina Raut",
-      publishedDate: "15th Jan, 2025",
-      status: "Active",
-      views: "29",
-    },
-    {
-      title: "Must go to place when you visit Nepal",
-      type: "Information",
-      category: "Leisure & Lifestyle",
-      publishedBy: "Abiral Pradhanag",
-      publishedDate: "15th Jan, 2025",
-      status: "Active",
-      views: "2",
-    },
-    {
-      title: "Foods that diabetic patient can eat",
-      type: "Information",
-      category: "Medical",
-      publishedBy: "Sakun Napit",
-      publishedDate: "15th Jan, 2025",
-      status: "Active",
-      views: "150",
-    },
-    {
-      title: "Grid System",
-      type: "Information",
-      category: "Design",
-      publishedBy: "Saraswati Niroula",
-      publishedDate: "15th Jan, 2025",
-      status: "Active",
-      views: "2587",
-    },
-    {
-      title: "Foods that diabetic patient can eat",
-      type: "Information",
-      category: "Medical",
-      publishedBy: "Sakun Napit",
-      publishedDate: "15th Jan, 2025",
-      status: "Flagged",
-      views: "150",
-    },
-  ];
-
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [data, setData] = useState(initialData);
   const [filters, setFilters] = useState({
     status: "",
     type: "",
@@ -82,36 +29,48 @@ const ContentManagement = () => {
   });
 
   const handleStatusChange = (index, newStatus) => {
-    console.log(`Status changed to ${newStatus} at index ${index}`);
-    const updatedData = [...tableData];
+    const updatedData = [...data];
     updatedData[index].status = newStatus;
+    setData(updatedData);
   };
-  const filteredData = tableData.filter((item) => {
+
+
+  const filteredData = data.filter((item) => {
     const matchesStatus = filters.status ? item.status === filters.status : true;
     const matchesType = filters.type ? item.type === filters.type : true;
-    const matchesCategory = filters.category
-      ? item.category === filters.category
-      : true;
+    const matchesCategory = filters.category ? item.category === filters.category : true;
     const matchesPublishedBy = filters.publishedBy
       ? item.publishedBy === filters.publishedBy
       : true;
+
     const matchesDate =
       filters.dateRange.startDate && filters.dateRange.endDate
-        ? new Date(item.publishedDate.replace("th", "").replace(",", "")) >=
-            filters.dateRange.startDate &&
-          new Date(item.publishedDate.replace("th", "").replace(",", "")) <=
-            filters.dateRange.endDate
+        ? dayjs(item.publishedDate).isAfter(dayjs(filters.dateRange.startDate).subtract(1, "day")) &&
+          dayjs(item.publishedDate).isBefore(dayjs(filters.dateRange.endDate).add(1, "day"))
         : true;
 
     return matchesStatus && matchesType && matchesCategory && matchesPublishedBy && matchesDate;
   });
 
+  const slugify = (str) =>
+    str
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+
+  const handleRowClick = (row) => {
+    const titleSlug = slugify(row.title);
+    navigate(`/posts/${titleSlug}`);
+  };
+
   return (
     <div className="ContentManagement">
       <div className="cms-header">
         <h2>Content Management</h2>
-       <div className="cms-svg" >
+        <div className="cms-svg">
           <svg
+            aria-hidden="true"
             width="20"
             height="20"
             viewBox="0 0 18 18"
@@ -123,19 +82,24 @@ const ContentManagement = () => {
               fill="#333333"
             />
           </svg>
-          <svg
-          onClick={() => setIsPopupOpen(true)}
-            width="16"
-            height="15"
-            viewBox="0 0 16 15"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+          <button
+            onClick={() => setIsPopupOpen(true)}
+            aria-label="Open Filter Popup"
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
           >
-            <path
-              d="M7.375 15C7.125 15 6.91667 14.9167 6.75 14.75C6.58333 14.5833 6.5 14.375 6.5 14.125V8.325L0.9 1.225C0.716667 0.958332 0.691667 0.691666 0.825 0.424999C0.958334 0.141665 1.18333 -1.43051e-06 1.5 -1.43051e-06H14.5C14.8167 -1.43051e-06 15.0417 0.141665 15.175 0.424999C15.3083 0.691666 15.2833 0.958332 15.1 1.225L9.5 8.325V14.125C9.5 14.375 9.41667 14.5833 9.25 14.75C9.08333 14.9167 8.875 15 8.625 15H7.375ZM8 7.8L12.95 1.5H3.05L8 7.8Z"
-              fill="#333333"
-            />
-          </svg>
+            <svg
+              width="16"
+              height="15"
+              viewBox="0 0 16 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7.375 15C7.125 15 6.91667 14.9167 6.75 14.75C6.58333 14.5833 6.5 14.375 6.5 14.125V8.325L0.9 1.225C0.716667 0.958332 0.691667 0.691666 0.825 0.424999C0.958334 0.141665 1.18333 -1.43051e-06 1.5 -1.43051e-06H14.5C14.8167 -1.43051e-06 15.0417 0.141665 15.175 0.424999C15.3083 0.691666 15.2833 0.958332 15.1 1.225L9.5 8.325V14.125C9.5 14.375 9.41667 14.5833 9.25 14.75C9.08333 14.9167 8.875 15 8.625 15H7.375ZM8 7.8L12.95 1.5H3.05L8 7.8Z"
+                fill="#333333"
+              />
+            </svg>
+          </button>
         </div>
       </div>
       <Table
@@ -143,6 +107,7 @@ const ContentManagement = () => {
         data={filteredData}
         onStatusChange={handleStatusChange}
         sortable={true}
+        onRowClick={handleRowClick}
       />
       <FilterPopup
         isOpen={isPopupOpen}

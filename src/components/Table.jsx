@@ -8,6 +8,7 @@ const Table = ({
   sortable = true,
   initialSortColumn = null,
   initialSortDirection = 'asc',
+  onRowClick,
 }) => {
   const [tableData, setTableData] = useState(data);
   const [sortColumn, setSortColumn] = useState(initialSortColumn);
@@ -22,8 +23,8 @@ const Table = ({
     setSortDirection(newDirection);
 
     const sortedData = [...tableData].sort((a, b) => {
-      const aValue = a[column];
-      const bValue = b[column];
+      const aValue = a[column.toLowerCase().replace(/ /g, '')] || ''; // Map header to row key
+      const bValue = b[column.toLowerCase().replace(/ /g, '')] || '';
       if (aValue < bValue) return newDirection === 'asc' ? -1 : 1;
       if (aValue > bValue) return newDirection === 'asc' ? 1 : -1;
       return 0;
@@ -43,6 +44,30 @@ const Table = ({
     { label: 'Inactive', action: (index) => handleStatusChange(index, 'Inactive') },
     { label: 'Flagged', action: (index) => handleStatusChange(index, 'Flagged') },
   ];
+
+  // Map row data to match headers
+  const getRowCells = (row) => {
+    return headers.map((header) => {
+      switch (header) {
+        case 'Title':
+          return row.title;
+        case 'Type':
+          return row.type;
+        case 'Category':
+          return row.category;
+        case 'Published By':
+          return row.publishedBy;
+        case 'Published Date':
+          return row.publishedDate;
+        case 'Status':
+          return row.status;
+        case 'No. of Views':
+          return row.views;
+        default:
+          return '';
+      }
+    });
+  };
 
   return (
     <table className="reusable-table">
@@ -66,12 +91,16 @@ const Table = ({
       </thead>
       <tbody className="t-body">
         {tableData.map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            {Object.values(row).map((cell, cellIndex) => {
+          <tr
+            key={rowIndex}
+            className="hover:bg-gray-100 cursor-pointer"
+            onClick={() => onRowClick?.(row)}
+          >
+            {getRowCells(row).map((cell, cellIndex) => {
               const header = headers[cellIndex];
               if (header === 'Status') {
                 return (
-                  <td key={cellIndex} className="p-2">
+                  <td key={cellIndex} className="p-2" onClick={(e) => e.stopPropagation()}>
                     <Button
                       text={cell}
                       icon="▼"
