@@ -12,7 +12,7 @@ const CrochetPost = () => {
     tags: ["Crochet"],
     imageSrc: crochetImage,
     imageAlt: "Crochet tools",
-    views: "5012",
+    views: "5012", 
     suggestions: "5",
     comments: [
       {

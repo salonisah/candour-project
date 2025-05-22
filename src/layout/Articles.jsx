@@ -40,6 +40,13 @@ const Articles = () => {
       views: '2587',
     },
   ];
+  const headerToKeyMap = {
+    'Title': 'title',
+    'Category': 'category',
+    'Published By': 'publishedBy',
+    'Published Date': 'publishedDate',
+    'No. of Views': 'views', // Map "No. of Views" to "views"
+  };
 
   return (
     <div className="Articles">
@@ -55,7 +62,9 @@ const Articles = () => {
           newcl="view-btn"
         />
         </div>
-      <Table headers={tableHeaders} data={tableData} />
+      <Table headers={tableHeaders} data={tableData} 
+        headerToKeyMap={headerToKeyMap}
+      />
     </div>
   );
 };

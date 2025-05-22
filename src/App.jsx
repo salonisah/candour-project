@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout";
 import Dashboard from "./layout/Dashboard";
 import Cms from "./pages/Cms";
+import UserManagement from "./pages/Um";
 import EditContent from "./pages/EditContent";
 import CrochetPost from "./layout/CrochetPost";
 import ChatList from "./components/ChatList";
@@ -17,6 +18,7 @@ function App() {
           <Route path="/chat-list" element={<ChatList />} />
         <Route path="/posts/:slug" element={<CrochetPost />} /> 
          <Route path="/edit-suggestion" element={<EditContent />} />
+          <Route path="/user-management" element={<UserManagement />} />
         </Route>
       </Routes>
     </BrowserRouter>

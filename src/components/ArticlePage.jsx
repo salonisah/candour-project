@@ -14,6 +14,11 @@ const ArticlePage = ({
   suggestions: propSuggestions,
   comments: propComments,
   content: propContent,
+  coverImageUrl,
+  isDraft = true,
+    onSaveDraft,
+  onPublish,
+
 }) => {
   const navigate = useNavigate();
   const { state } = useLocation();

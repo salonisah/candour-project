@@ -181,11 +181,40 @@ body {
   opacity: 1;
   visibility: visible;
 }
-
+.edit-content {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+.right-header {
+  display: flex;
+}
+.main-contentarticle {
+  width: 100%;
+}
+.arrowcls {
+  display: flex;
+  align-items: left;
+  margin-top: 16px;
+  padding-right: 10px;
+}
+.publish-btn {
+  background: var(--primary-color);
+  color: white;
+  border: 2px;
+  border-radius: none;
+}
+.draft-btn {
+  color: var(--primary-color);
+}
 .profile-menu-list {
   padding: 8px 0;
   margin: 0;
   list-style: none;
+}
+.header-actions {
+  display: flex;
+  gap: 20px;
 }
 
 .profile-menu-item {
@@ -201,9 +230,9 @@ body {
 /* layout main  */
 .main-content {
   margin-left: 259px;
-  padding: 1rem 2rem;
   width: 100%;
   max-width: 1200px;
+  padding: 1rem;
 }
 .main-content-article {
   flex: 1;
@@ -292,11 +321,25 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
+  font-weight: 500;
   /* background-color: var(--primary-color) */
+}
+.main-contentedit {
+  width: 100%;
+  padding-right: 20px;
+}
+.action-menu {
+  border: none;
+  margin-left: -50px;
+  background: none;
+  box-shadow: none;
 }
 .my-dropdown {
   color: #ffffff;
   background-color: var(--primary-color);
+}
+.editor-wraper {
+  display: flex;
 }
 
 /* Dropdown arrow icon */
@@ -692,6 +735,11 @@ select {
   font-family: Arial, sans-serif;
   font-size: 14px;
 }
+.pagination {
+  display: flex;
+  margin-top: 20px;
+  gap: 10px;
+}
 
 .reusable-table th {
   padding: 12px 15px;
@@ -710,7 +758,7 @@ select {
   font-weight: 400;
   font-size: 16px;
   color: #616161;
-  padding: 10px 15px;
+  padding: 7px 0px 5px 20px;
 }
 .reusable-table th:first-child {
   padding-left: 20px;
@@ -829,7 +877,7 @@ select {
 }
 .chat-sidebar {
   width: 350px;
-  padding-left: 10px;
+  padding-left: 30px;
   height: 100vh;
   overflow-y: auto;
   background-color: #f9f9f9;
@@ -1015,23 +1063,24 @@ select {
   color: #616161;
   margin: 5px 0px;
 }
-  .comment-header {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            font-family: var(--font-primary); /* Fallback if --font-primary is not defined */
-            font-weight: 600;
-            font-size: 16px;
-            color: #484848;
-            cursor: pointer;
-            margin-bottom: 20px;
-            
-          }
+.comment-header {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  font-family: var(
+    --font-primary
+  ); /* Fallback if --font-primary is not defined */
+  font-weight: 600;
+  font-size: 16px;
+  color: #484848;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
 
-          .comment-header .active {
-            border-bottom: 2px solid #ff0000;
-            color: #666; /* As per provided CSS, though image suggests keeping original color */
-          }
+.comment-header .active {
+  border-bottom: 2px solid #ff0000;
+  color: #666; /* As per provided CSS, though image suggests keeping original color */
+}
 
 .article-image {
   aspect-ratio: 3/2;

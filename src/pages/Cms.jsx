@@ -17,7 +17,7 @@ const ContentManagement = () => {
     "Status",
     "No. of Views",
   ];
-
+ 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [data, setData] = useState(initialData);
   const [filters, setFilters] = useState({
@@ -27,6 +27,15 @@ const ContentManagement = () => {
     publishedBy: "",
     dateRange: { startDate: null, endDate: null },
   });
+  const headerToKeyMap = {
+    'Title': 'title',
+    'Type': 'type',
+    'Category': 'category',
+    'Published By': 'publishedBy',
+    'Published Date': 'publishedDate',
+    'Status': 'status',
+    'No. of Views': 'views',
+  };
 
   const handleStatusChange = (index, newStatus) => {
     const updatedData = [...data];
@@ -108,6 +117,9 @@ const ContentManagement = () => {
         onStatusChange={handleStatusChange}
         sortable={true}
         onRowClick={handleRowClick}
+         headerToKeyMap={headerToKeyMap}
+        showPagination={true}
+        
       />
       <FilterPopup
         isOpen={isPopupOpen}
