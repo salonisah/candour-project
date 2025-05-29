@@ -2,12 +2,12 @@ import React from "react";
 
 const Tab = ({ label, active, onClick }) => {
   return (
-    <span
+    <button
       className={`tab ${active ? "active" : ""}`}
       onClick={onClick}
     >
       {label}
-    </span>
+    </button>
   );
 };
 

@@ -1,21 +1,67 @@
-
-
 import React from "react";
-const ChatCard = ({ name, time, avatar,role }) => {
+import ChatCard from "../components/ChatCard";
+import PerformanceChart from "../components/PerformanceChart";
+import CategoryChart from "../components/CategoryChart";
+import RevenueReport from "../components/RevenueReport";
+import UserAgeGroup from "../components/UserAgeGroup";
+import TopPublishers from "../components/TopPublishers";
+import TopArticles from "../components/TopArticles";
+
+const ReportsAndMetrics = () => {
   return (
-    <div className="chat-card">
-      <img src={avatar} alt={name} className="avatar" />
-      <div className="chat-info">
-        <div className="name">{name}</div>
-        <div className="time">{time}</div>
-        <div className="role">{role}</div>
+    <div className="reports-page" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "40px" }}>
+      <h2>Reports & Metrics</h2>
+
+      {/* Full Width: Reports by Category */}
+      <div>
+        <h3>Reports by Category</h3>
+        <CategoryChart />
       </div>
-      <div className="chat-icon"><svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M5 11.75H11C11.2167 11.75 11.3917 11.6833 11.525 11.55C11.675 11.4 11.75 11.2167 11.75 11C11.75 10.7833 11.675 10.6083 11.525 10.475C11.3917 10.325 11.2167 10.25 11 10.25H5C4.78333 10.25 4.6 10.325 4.45 10.475C4.31667 10.6083 4.25 10.7833 4.25 11C4.25 11.2167 4.31667 11.4 4.45 11.55C4.6 11.6833 4.78333 11.75 5 11.75ZM5 8.75H15C15.2167 8.75 15.3917 8.68333 15.525 8.55C15.675 8.4 15.75 8.21667 15.75 8C15.75 7.78333 15.675 7.60833 15.525 7.475C15.3917 7.325 15.2167 7.25 15 7.25H5C4.78333 7.25 4.6 7.325 4.45 7.475C4.31667 7.60833 4.25 7.78333 4.25 8C4.25 8.21667 4.31667 8.4 4.45 8.55C4.6 8.68333 4.78333 8.75 5 8.75ZM5 5.75H15C15.2167 5.75 15.3917 5.68333 15.525 5.55C15.675 5.4 15.75 5.21667 15.75 5C15.75 4.78333 15.675 4.60833 15.525 4.475C15.3917 4.325 15.2167 4.25 15 4.25H5C4.78333 4.25 4.6 4.325 4.45 4.475C4.31667 4.60833 4.25 4.78333 4.25 5C4.25 5.21667 4.31667 5.4 4.45 5.55C4.6 5.68333 4.78333 5.75 5 5.75ZM4.05 15.5L2.025 17.5C1.74167 17.7833 1.41667 17.85 1.05 17.7C0.683334 17.5333 0.5 17.25 0.5 16.85V2.3C0.5 1.8 0.675 1.375 1.025 1.025C1.375 0.674999 1.8 0.499999 2.3 0.499999H17.7C18.2 0.499999 18.625 0.674999 18.975 1.025C19.325 1.375 19.5 1.8 19.5 2.3V13.7C19.5 14.2 19.325 14.625 18.975 14.975C18.625 15.325 18.2 15.5 17.7 15.5H4.05ZM2.7 14H17.7C17.7667 14 17.8333 13.9667 17.9 13.9C17.9667 13.8333 18 13.7667 18 13.7V2.3C18 2.23333 17.9667 2.16667 17.9 2.1C17.8333 2.03333 17.7667 2 17.7 2H2.3C2.23333 2 2.16667 2.03333 2.1 2.1C2.03333 2.16667 2 2.23333 2 2.3V14.7L2.7 14ZM2 14V2.3C2 2.23333 2 2.16667 2 2.1C2 2.03333 2 2 2 2C2 2 2 2.03333 2 2.1C2 2.16667 2 2.23333 2 2.3V13.7C2 13.7667 2 13.8333 2 13.9C2 13.9667 2 14 2 14Z" fill="#333333"/>
-</svg>
-</div>
+
+      {/* 70:30 Row: Revenue & Age Group */}
+      <div style={{ display: "flex", gap: "24px" }}>
+        <div style={{ flex: 7 }}>
+          <h3>Report by Revenue</h3>
+          <RevenueReport />
+        </div>
+        <div style={{ flex: 3 }}>
+          <h3>User Age Group</h3>
+          <UserAgeGroup />
+        </div>
+      </div>
+
+      {/* 70:30 Row: Top Publishers & Top Articles */}
+      <div style={{ display: "flex", gap: "24px" }}>
+        <div style={{ flex: 7 }}>
+          <h3>Top Publishers</h3>
+          <TopPublishers />
+        </div>
+        <div style={{ flex: 3 }}>
+          <h3>Top Articles</h3>
+          <TopArticles />
+        </div>
+      </div>
+
+      {/* Optional: Team Conversations (existing section) */}
+      <div>
+        <h3>Team Conversations</h3>
+        <div className="chat-list" style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+          <ChatCard
+            name="John Doe"
+            time="10:30 AM"
+            avatar="https://i.pravatar.cc/50?img=1"
+            role="Support Agent"
+          />
+          <ChatCard
+            name="Jane Smith"
+            time="11:00 AM"
+            avatar="https://i.pravatar.cc/50?img=2"
+            role="Manager"
+          />
+        </div>
+      </div>
     </div>
   );
 };
 
-export default ChatCard;
+export default ReportsAndMetrics;

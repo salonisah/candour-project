@@ -187,7 +187,7 @@ const UserManagement = () => {
 
 
   return (
-     <div className="ContentManagement">
+     <div className="UserManagement">
    <div className="cms-header">
       <h1>User Management</h1>
        <div className="cms-svg">

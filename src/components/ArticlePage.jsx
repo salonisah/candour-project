@@ -224,7 +224,7 @@ const ArticlePage = ({
               <Comment
                 key={comment.author + index} // Use author + index as a fallback key
                 avatar={comment.avatar}
-                author={comment.author}
+                author={comment.author}npm run dev
                 date={comment.date}
                 text={comment.text}
               />

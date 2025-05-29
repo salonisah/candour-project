@@ -14,7 +14,7 @@ const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Content Management", icon: FileText, path: "/cms" },
   { label: "User Management", icon: User, path: "/user-management" },
-  { label: "Admin Management", icon: UserCog, path: "/admins" },
+  { label: "Admin Management", icon: UserCog, path: "/admin-management" },
   { label: "Reward & Revenue", icon: DollarSign, path: "/rewards" },
   { label: "Reports & Metrics", icon: BarChart2, path: "/reports" },
   { label: "Chat", icon: MessageSquare, path: "/chat-list" },

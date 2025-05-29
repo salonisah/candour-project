@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import Button from './Button';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Button from "./Button";
 
 const Table = ({
+  className,
   headers,
   data,
   onStatusChange,
   sortable = true,
   initialSortColumn = null,
-  initialSortDirection = 'asc',
+  initialSortDirection = "asc",
   onRowClick,
   headerToKeyMap = {},
   showPagination = false,
+  statusOptions, // Dropdown options for status (e.g., ["Active", "Inactive", "Redeemed"])
+  statusButtonText, // If set, renders a button with this text instead of a dropdown
+  renderCustomActions,
 }) => {
   const [tableData, setTableData] = useState(data);
   const [sortColumn, setSortColumn] = useState(initialSortColumn);
@@ -21,6 +26,10 @@ const Table = ({
   const [rowToDelete, setRowToDelete] = useState(null);
   const rowsPerPage = 7;
 
+  useEffect(() => {
+    setTableData(data);
+  }, [data]);
+
   const totalRows = tableData.length;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -29,22 +38,22 @@ const Table = ({
 
   const normalizeHeader = (header) =>
     headerToKeyMap[header] ||
-    header.toLowerCase().replace(/ /g, '').replace(/[^a-zA-Z0-9]/g, '');
+    header.toLowerCase().replace(/ /g, "").replace(/[^a-zA-Z0-9]/g, "");
 
   const handleSort = (column) => {
     if (!sortable) return;
 
     const key = normalizeHeader(column);
     const newDirection =
-      sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
+      sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
     setSortColumn(column);
     setSortDirection(newDirection);
 
     const sortedData = [...tableData].sort((a, b) => {
-      const aValue = a[key] || '';
-      const bValue = b[key] || '';
-      if (aValue < bValue) return newDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return newDirection === 'asc' ? 1 : -1;
+      const aValue = a[key] || "";
+      const bValue = b[key] || "";
+      if (aValue < bValue) return newDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return newDirection === "asc" ? 1 : -1;
       return 0;
     });
     setTableData(sortedData);
@@ -53,19 +62,26 @@ const Table = ({
 
   const handleStatusChange = (index, newStatus) => {
     const updatedData = [...tableData];
-    const key = normalizeHeader('Status');
+    const key = normalizeHeader("Status");
     updatedData[startIndex + index][key] = newStatus;
     setTableData(updatedData);
     if (onStatusChange) onStatusChange(startIndex + index, newStatus);
   };
 
-  const statusOptions = [
-    { label: 'Active', action: (index) => handleStatusChange(index, 'Active') },
-    { label: 'Inactive', action: (index) => handleStatusChange(index, 'Inactive') },
-    { label: 'Flagged', action: (index) => handleStatusChange(index, 'Flagged') },
+  const defaultStatusOptions = [
+    { label: "Active", action: (index) => handleStatusChange(index, "Active") },
+    { label: "Inactive", action: (index) => handleStatusChange(index, "Inactive") },
+    { label: "Flagged", action: (index) => handleStatusChange(index, "Flagged") },
   ];
 
-  const actionOptions = (rowIndex) => [
+  const customStatusOptions = statusOptions
+    ? statusOptions.map((option) => ({
+        label: option.label || option,
+        action: (index) => handleStatusChange(index, option.value || option),
+      }))
+    : defaultStatusOptions;
+
+  const defaultActionOptions = (rowIndex) => [
     {
       label: (
         <div className="flex items-center text-red-600">
@@ -85,34 +101,36 @@ const Table = ({
         </div>
       ),
       action: (e) => {
-        e?.preventDefault(); // Prevent any navigation or default behavior
+        e?.preventDefault();
         setRowToDelete(rowIndex);
-        setShowDeleteModal(true); // Show the popup on the same page
+        setShowDeleteModal(true);
       },
     },
   ];
 
-  const getRowCells = (row) => {
+  const getRowCells = (row, rowIndex) => {
     return headers.map((header) => {
       const key = normalizeHeader(header);
-      return row[key] || '';
+      return row[key] || "";
     });
   };
 
   const getColumnWidth = (header) => {
     switch (header) {
-      case 'Title':
-        return 'w-1/5';
-      case 'Type':
-      case 'Category':
-      case 'Published By':
-      case 'Published Date':
-        return 'w-[15%]';
-      case 'Status':
-      case 'No. of Views':
-        return 'w-1/10';
+      case "Title":
+        return "w-1/5";
+      case "Type":
+      case "Category":
+      case "Published By":
+      case "Published Date":
+      case "Date":
+      case "Source":
+        return "w-[15%]";
+      case "Status":
+      case "No. of Views":
+        return "w-1/10";
       default:
-        return 'w-auto';
+        return "w-auto";
     }
   };
 
@@ -151,12 +169,12 @@ const Table = ({
                 key={header}
                 onClick={() => handleSort(header)}
                 className={`${
-                  sortable ? 'cursor-pointer hover:bg-gray-300' : ''
+                  sortable ? "cursor-pointer hover:bg-gray-300" : ""
                 } text-center p-2 border-b font-medium ${getColumnWidth(header)}`}
               >
                 {header}
                 {sortColumn === header && (
-                  <span>{sortDirection === 'asc' ? ' ↑' : ' ↓'}</span>
+                  <span>{sortDirection === "asc" ? " ↑" : " ↓"}</span>
                 )}
               </th>
             ))}
@@ -169,27 +187,61 @@ const Table = ({
               key={rowIndex}
               className="hover:bg-gray-100 cursor-pointer"
               onClick={(e) => {
-                e.preventDefault(); // Prevent any navigation on row click
+                e.preventDefault();
                 onRowClick?.(row);
               }}
             >
-              {getRowCells(row).map((cell, cellIndex) => {
+              {getRowCells(row, rowIndex).map((cell, cellIndex) => {
                 const header = headers[cellIndex];
-                if (header === 'Status') {
+                if (header === "Status") {
                   return (
-                    <td key={cellIndex} className="p-2" onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        text={cell}
-                        icon="▼"
-                        items={statusOptions.map((option) => ({
-                          ...option,
-                          action: (e) => {
-                            e?.preventDefault(); // Prevent navigation in status dropdown
-                            option.action(rowIndex);
-                          },
-                        }))}
-                        newcl={`status-dropdown px-2 py-1 rounded border ${cell.toLowerCase()}`}
-                      />
+                    <td
+                      key={cellIndex}
+                      className="p-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {statusButtonText ? (
+                        // Render a static button if statusButtonText is provided
+                        <Button
+                          text={statusButtonText}
+                          newcl={`status-button px-2 py-1 rounded border ${statusButtonText.toLowerCase()}`}
+                        />
+                      ) : (
+                        // Render a dropdown if statusOptions are provided
+                        <Button
+                          text={cell}
+                          icon={
+                            <svg width="10" height="7" viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8.82812 0.148438L10 1.32031L5 6.32031L0 1.32031L1.17188 0.148438L5 3.97656L8.82812 0.148438Z" fill="#616161"/>
+                            </svg>
+                          }
+                          items={customStatusOptions.map((option) => ({
+                            ...option,
+                            action: (e) => {
+                              e?.preventDefault();
+                              option.action(rowIndex);
+                            },
+                          }))}
+                          newcl={`status-dropdown px-2 py-1 rounded border ${cell.toLowerCase()}`}
+                        />
+                      )}
+                    </td>
+                  );
+                }
+                if (header === "Name") {
+                  return (
+                    <td
+                      key={cellIndex}
+                      className="p-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Link
+                        to={`/user/${startIndex + rowIndex}`}
+                        state={{ user: row }}
+                        style={{ color: "inherit", textDecoration: "none" }}
+                      >
+                        {cell}
+                      </Link>
                     </td>
                   );
                 }
@@ -197,36 +249,43 @@ const Table = ({
                   <td
                     key={cellIndex}
                     className={`p-2 ${
-                      header === 'Title'
-                        ? 'whitespace-nowrap overflow-hidden text-ellipsis'
-                        : ''
+                      header === "Title"
+                        ? "whitespace-nowrap overflow-hidden text-ellipsis"
+                        : ""
                     }`}
-                    title={header === 'Title' ? cell : undefined}
+                    title={header === "Title" ? cell : undefined}
                   >
                     {cell}
                   </td>
                 );
               })}
-              <td className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  text=""
-                  icon={
-                    <svg
-                      width="4"
-                      height="16"
-                      viewBox="0 0 4 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle cx="2" cy="2" r="2" fill="#333333" />
-                      <circle cx="2" cy="8" r="2" fill="#333333" />
-                      <circle cx="2" cy="14" r="2" fill="#333333" />
-                    </svg>
-                  }
-                  items={actionOptions(rowIndex)}
-                  newcl="action-menu px-2 py-1 bg-white shadow-md"
-                  itemClass="px-2 py-3 text-red-600 bg-white"
-                />
+              <td
+                className="p-2 text-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {renderCustomActions ? (
+                  renderCustomActions(rowIndex)
+                ) : (
+                  <Button
+                    text=""
+                    icon={
+                      <svg
+                        width="4"
+                        height="16"
+                        viewBox="0 0 4 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle cx="2" cy="2" r="2" fill="#333333" />
+                        <circle cx="2" cy="8" r="2" fill="#333333" />
+                        <circle cx="2" cy="14" r="2" fill="#333333" />
+                      </svg>
+                    }
+                    items={defaultActionOptions(rowIndex)}
+                    newcl="action-menu px-2 py-1 bg-white shadow-md"
+                    itemClass="px-2 py-3 text-red-600 bg-white"
+                  />
+                )}
               </td>
             </tr>
           ))}
@@ -240,13 +299,13 @@ const Table = ({
               <button
                 key={index}
                 onClick={(e) => {
-                  e.preventDefault(); // Prevent navigation in pagination
+                  e.preventDefault();
                   goToPage(page);
                 }}
                 className={`w-5 h-5 flex items-center justify-center ${
                   currentPage === page
-                    ? 'bg-[#800000] text-white'
-                    : 'bg-[#D9D9D9] text-[#800000]'
+                    ? "bg-[#800000] text-white"
+                    : "bg-[#D9D9D9] text-[#800000]"
                 } text-xs font-medium rounded-full`}
               >
                 {page}
@@ -261,14 +320,14 @@ const Table = ({
           ))}
           <button
             onClick={(e) => {
-              e.preventDefault(); // Prevent navigation in pagination
+              e.preventDefault();
               goToPage(currentPage + 1);
             }}
             disabled={currentPage === totalPages}
             className={`w-5 h-5 flex items-center justify-center rounded-full ${
               currentPage === totalPages
-                ? 'bg-[#E5E5E5] cursor-not-allowed'
-                : 'bg-[#D9D9D9]'
+                ? "bg-[#E5E5E5] cursor-not-allowed"
+                : "bg-[#D9D9D9]"
             }`}
           >
             <svg
@@ -287,7 +346,7 @@ const Table = ({
         </div>
       )}
 
-      {/* Delete Confirmation Popup - Rendered as an overlay on the same page, no navigation */}
+      {/* Delete Confirmation Popup */}
       {showDeleteModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 w-96 shadow-lg">
@@ -295,8 +354,8 @@ const Table = ({
               <h2 className="text-lg font-semibold text-black">Delete Content</h2>
               <button
                 onClick={(e) => {
-                  e.preventDefault(); // Prevent any navigation or page reload
-                  setShowDeleteModal(false); // Close the popup, stay on the same page
+                  e.preventDefault();
+                  setShowDeleteModal(false);
                 }}
                 className="text-gray-500 hover:text-gray-700 text-xl"
               >
@@ -304,13 +363,14 @@ const Table = ({
               </button>
             </div>
             <p className="mb-6 text-gray-600 text-sm">
-              Selected content will be permanently removed from system. Are you sure you want to delete content?
+              Selected content will be permanently removed from system. Are you sure you
+              want to delete content?
             </p>
             <div className="flex justify-end space-x-4">
               <button
                 onClick={(e) => {
-                  e.preventDefault(); // Prevent any navigation or page reload
-                  setShowDeleteModal(false); // Close the popup, stay on the same page
+                  e.preventDefault();
+                  setShowDeleteModal(false);
                 }}
                 className="px-4 py-2 bg-[#FFC1CC] text-black rounded hover:bg-[#FF99AA] transition-colors"
               >
@@ -318,7 +378,7 @@ const Table = ({
               </button>
               <button
                 onClick={(e) => {
-                  e.preventDefault(); // Prevent any navigation or page reload
+                  e.preventDefault();
                   const updatedData = [...tableData];
                   updatedData.splice(startIndex + rowToDelete, 1);
                   setTableData(updatedData);
@@ -326,8 +386,8 @@ const Table = ({
                   if (currentPage > newTotalPages) {
                     setCurrentPage(newTotalPages || 1);
                   }
-                  setShowDeleteModal(false); // Close the popup
-                  setShowSuccessModal(true); // Show success modal on the same page
+                  setShowDeleteModal(false);
+                  setShowSuccessModal(true);
                   setRowToDelete(null);
                 }}
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center transition-colors"
@@ -351,7 +411,7 @@ const Table = ({
         </div>
       )}
 
-      {/* Success Modal - Rendered as an overlay on the same page, no navigation */}
+      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 w-96 shadow-lg">
@@ -359,8 +419,8 @@ const Table = ({
               <h2 className="text-lg font-semibold">Deletion Successful</h2>
               <button
                 onClick={(e) => {
-                  e.preventDefault(); // Prevent any navigation or page reload
-                  setShowSuccessModal(false); // Close the modal, stay on the same page
+                  e.preventDefault();
+                  setShowSuccessModal(false);
                 }}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -371,8 +431,8 @@ const Table = ({
             <div className="flex justify-end">
               <button
                 onClick={(e) => {
-                  e.preventDefault(); // Prevent any navigation or page reload
-                  setShowSuccessModal(false); // Close the modal, stay on the same page
+                  e.preventDefault();
+                  setShowSuccessModal(false);
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
